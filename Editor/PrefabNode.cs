@@ -9,11 +9,6 @@ partial class PrefabNode : GameObjectNode
 
 	}
 
-	public override bool HasChildren => Value.Children.Any();
-
-	protected override void BuildChildren() => SetChildren( Value.Children.Where( x => x.ShouldShowInHierarchy() ), x => new GameObjectNode( x ) );
-	protected override bool HasDescendant( object obj ) => obj is GameObject go && Value.IsDescendant( go );
-
 	public override void OnPaint( VirtualWidget item )
 	{
 		var isEven = item.Row % 2 == 0;
@@ -51,23 +46,6 @@ partial class PrefabNode : GameObjectNode
 		Paint.SetDefaultFont();
 		Paint.SetPen( Theme.TextControl );
 		Paint.DrawText( r, $"{Value.Name}", TextFlag.LeftCenter );
-	}
-
-	public override int ValueHash
-	{
-		get
-		{
-			HashCode hc = new HashCode();
-
-			foreach ( var val in Value.Children )
-			{
-				if ( !val.ShouldShowInHierarchy() ) continue;
-
-				hc.Add( val );
-			}
-
-			return hc.ToHashCode();
-		}
 	}
 
 	public override bool OnContextMenu()
@@ -127,7 +105,4 @@ partial class PrefabNode : GameObjectNode
 		}
 		asset.SaveToDisk( prefabFile );
 	}
-
-
 }
-
