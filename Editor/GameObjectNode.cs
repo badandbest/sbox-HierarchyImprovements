@@ -171,40 +171,23 @@ partial class GameObjectNode : TreeNode<GameObject>
 		//
 		if ( TreeView.IsBeingDroppedOn )
 		{
-			if ( TreeView.CurrentItemDragEvent.Data.Object is GameObject[] gos && gos.Any( go => Value.IsAncestor( go ) ) )
+			var e = TreeView.CurrentItemDragEvent;
+
+			if ( e.Data.OfType<object>().Any( HasAncestor ) )
 			{
 				opacity *= 0.23f;
 			}
-			else if ( TreeView.CurrentItemDragEvent.Data.Object is GameObject go && Value.IsAncestor( go ) )
+			else if ( item.Dropping )
 			{
-				opacity *= 0.23f;
-			}
-		}
+				var droprect = e.DropEdge switch
+				{
+					ItemEdge.Top => item.Rect with { Height = 0 },
+					ItemEdge.Bottom => item.Rect with { Top = item.Rect.Bottom },
+					_ => item.Rect
+				};
 
-		if ( item.Dropping )
-		{
-			Paint.ClearPen();
-			Paint.SetBrush( Theme.Blue );
-
-			if ( TreeView.CurrentItemDragEvent.DropEdge.HasFlag( ItemEdge.Top ) )
-			{
-				var droprect = item.Rect;
-				droprect.Top -= 1;
-				droprect.Height = 2;
-				Paint.DrawRect( droprect, 2 );
-			}
-			else if ( TreeView.CurrentItemDragEvent.DropEdge.HasFlag( ItemEdge.Bottom ) )
-			{
-				var droprect = item.Rect;
-				droprect.Top = droprect.Bottom - 1;
-				droprect.Height = 2;
-				Paint.DrawRect( droprect, 2 );
-			}
-			else
-			{
 				Paint.SetBrushAndPen( Theme.Blue.WithAlpha( 0.2f ), Theme.Blue );
-				Paint.PenSize = 2;
-				Paint.DrawRect( item.Rect, 4 );
+				Paint.DrawRect( droprect, 4 );
 			}
 		}
 
