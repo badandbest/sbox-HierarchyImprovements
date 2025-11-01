@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using static Editor.BaseItemWidget;
 
 namespace Editor;
 
@@ -88,6 +89,8 @@ public partial class SceneTreeWidget : Widget
 			return false;
 		};
 
+		TreeView.ItemPaint = PaintItemBackground;
+
 		Layout.Add( TreeView, 1 );
 
 		_lastSession = null;
@@ -95,6 +98,43 @@ public partial class SceneTreeWidget : Widget
 
 		EditorUtility.OnInspect -= OnInspect;
 		EditorUtility.OnInspect += OnInspect;
+	}
+
+	void PaintItemBackground( VirtualWidget item )
+	{
+		var fullSpanRect = item.Rect with { Left = 0, Right = Width };
+
+		Paint.ClearPen();
+
+		if ( item.Selected )
+		{
+			Paint.SetBrush( Theme.Blue.WithAlpha( 0.1f ) );
+			Paint.DrawRect( fullSpanRect );
+		}
+		else if ( int.IsEvenInteger( item.Row ) )
+		{
+			Paint.SetBrush( Theme.SurfaceLightBackground.WithAlpha( 0.1f ) );
+			Paint.DrawRect( fullSpanRect );
+		}
+
+		//
+		// Dropping
+		//
+
+		if ( item.Dropping )
+		{
+			var e = TreeView.CurrentItemDragEvent;
+
+			var dropRect = e.DropEdge switch
+			{
+				ItemEdge.Top => item.Rect with { Height = 0 },
+				ItemEdge.Bottom => item.Rect with { Top = item.Rect.Bottom },
+				_ => item.Rect
+			};
+
+			Paint.SetBrushAndPen( Theme.Blue.WithAlpha( 0.2f ), Theme.Blue );
+			Paint.DrawRect( dropRect, 4 );
+		}
 	}
 
 	void CreateGameObjectMenu()
