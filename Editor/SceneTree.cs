@@ -66,7 +66,7 @@ public partial class SceneTreeWidget : Widget
 		};
 		SearchClear.Visible = false;
 
-		TreeView = new TreeView();
+		TreeView = new TreeViewOverrides();
 		TreeView.MultiSelect = true;
 		TreeView.BodyDropTarget = TreeView.DragDropTarget.LastRoot;
 		TreeView.BodyContextMenu = OpenTreeViewContextMenu;
